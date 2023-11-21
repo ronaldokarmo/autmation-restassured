@@ -1,0 +1,25 @@
+# Usage:
+#   docker-compose up - build image and run tests
+#   docker-compose down --rmi all - delete images and containers based on docker-compose
+version: '3'
+
+services:
+  rest:
+    image: vad1mo/hello-world-rest
+    build:
+      context: .
+      dockerfile: Dockerfile
+  des:
+    image: vad1mo/hello-world-rest:latest
+    depends_on:
+      - rest
+    volumes:
+      - ./target/des:/usr/target
+    command: mvn test -Dcucumber.filter.tags=@JIRA-001 -Denv=des
+  uat:
+    image: vad1mo/hello-world-rest:latest
+    depends_on:
+      - rest
+    volumes:
+      - ./target/uat:/usr/target
+    command: mvn test -Dcucumber.filter.tags=@JIRA-001 -Denv=uat
